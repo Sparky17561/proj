@@ -1,0 +1,53 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phish-mail Detection</title>
+    <link rel="stylesheet" href="{% static 'style/success.css' %}">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <a href="#">Home</a>
+            <a href="#">How it works</a>
+            <a href="#">Stories</a>
+            <a href="#">Features</a>
+            <a href="#">Pricing</a>
+            <a href="#">Contact</a>
+            <button class="nav-button">Request Demo</button>
+        </nav>
+    </header>
+    <main>
+        <section class="hero">
+            <h1>Phish-mail Detection</h1>
+            <p>Boost your email security with our state-of-the-art Phish-Mail detection system.</p>
+        </section>
+        <div class="containerm">
+            <form method="post" enctype="multipart/form-data">
+                <div class="upload-form" id="drop-area">
+                    <h1>Upload EML File</h1>
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                </div>
+                <div class="file-list">
+                    <p>To Upload</p>
+                    <div id="file-display">
+                        <p>No files selected</p>
+                    </div>
+                </div>
+                <button type="submit" id="submit-button" class="button upload">Submit</button>
+                <button type="button" class="button cancel" id="cancel-button">
+                    Cancel
+                </button>
+            </form>
+        </div>
+    </main>
+    <script src="{% static 'js/scripts.js' %}"></script>
+</body>
+
+</html>

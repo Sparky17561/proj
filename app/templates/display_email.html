@@ -1,0 +1,200 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Phish-mail Detection</title>
+    <link rel="stylesheet" href="{% static 'style/success.css' %}" />
+  </head>
+
+  <body>
+    <header>
+      <nav>
+        <a href="#">Home</a>
+        <a href="#">How it works</a>
+        <a href="#">Stories</a>
+        <a href="#">Features</a>
+        <a href="#">Pricing</a>
+        <a href="#">Contact</a>
+        <button class="nav-button">Request Demo</button>
+      </nav>
+    </header>
+
+    <aside>
+      <button class="button">
+        <a href="{% url 'upload_email' %}">Back</a>
+      </button>
+      <div class="main">
+        <div class="body">
+          <h1><span>Email Subject : </span>{{ subject }}</h1>
+          <p><span>Email Body : </span>{{ body }}</p>
+
+          <!-- <h2>Links:</h2>
+                <ul>
+                    {% for link in links %}
+                    <li><a href="{{ link }}">{{ link }}</a></li>
+                    {% endfor %}
+                </ul> -->
+        </div>
+        <div class="details">
+          <span class="percentage">{{ maliciousness_percentage }}% malicious</span>
+          <span class="malicious">{{ msg }} overall</span>
+
+          <h3>Model Predictions:</h3>
+          <ul>
+            {% for model_name, prediction in result %}
+            <li>
+              <strong>{{ model_name }}:</strong> {% if prediction == 1 %} Safe
+              {% else %} Not Safe {% endif %}
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </aside>
+
+    <main>
+      <div class="main-1">
+        <h1>URL : {{ email_links }}</h1>
+        <div class="main-child">
+          <div class="grid-container">
+            <span>
+              <span class="numbers">{{ report1.requests }}</span
+              ><br />Requests
+            </span>
+            <span>
+              <span class="numbers">{{ report2.domain }}</span
+              ><br />Domains
+            </span>
+            <span>
+              <span class="numbers">{{ report1.countries }}</span
+              ><br />Countries
+            </span>
+            <span>
+              <span class="numbers"
+                >{{ report1.size_kb }} kB</span
+              ><br />Size
+            </span>
+            <span>
+              <span class="numbers"
+                >{{ report1.https|yesno:"100%,No" }}</span
+              ><br />HTTPS
+            </span>
+            <span>
+              <span class="numbers"
+                >{{ report1.subdomains }}</span
+              ><br />Subdomains
+            </span>
+            <span>
+              <span class="numbers"
+                >{{ report2.whois.domain_age_days }} days</span
+              ><br />Domain Age
+            </span>
+            <span>
+              <span class="numbers">{{ report1.cookies }}</span
+              ><br />Cookies
+            </span>
+            <span>
+              <span class="numbers"
+                >{{ report1.ipv6|yesno:"100%,No" }}</span
+              ><br />IPv6
+            </span>
+            <span>
+              <span class="numbers">{{ report2.ip_count }}</span><br />IPs
+            </span>
+            <span>
+              <span class="numbers">{{ report2.dns_records }}</span><br />DNS
+              Records
+            </span>
+            <span>
+              <span class="numbers"
+                >{{ report1.transfer_kb }} kB</span
+              ><br />Transfer
+            </span>
+          </div>
+          <div class="details-2">
+            <!-- Replace 75% with actual average_maliciousness -->
+            <span class="percentage">{{ average_maliciousness }}%</span>
+            <span class="malicious">malicious</span>
+          </div>
+          <div class="screenshot">screenshot</div>
+        </div>
+      </div>
+
+      <div class="main-2">
+        <form id="feedback-form" method="POST">
+          {% csrf_token %}
+          <h1>Report</h1>
+          <div class="input">
+            <input
+              class="email"
+              id="email"
+              name="email"
+              placeholder="enter email"
+              type="text"
+            />
+            <input
+              class="proof"
+              id="proof"
+              name="proof"
+              placeholder="Tell us in detail or proof why we are wrong"
+              type="text"
+            />
+          </div>
+          <button class="button" type="submit" onclick="check()">Submit</button>
+        </form>
+      </div>
+
+      <div class="main-3">
+        <h1>Verdict</h1>
+        <h2 class="result">Unsafe</h2>
+        <div class="info">
+          <div>Email was found <span>{{ non_malicious_percentage }}%</span> not malicious</div>
+          <div>Urls were <span>{{ average_maliciousness }}%</span> malicious overall</div>
+          <div>Attachments don't contain anything malicious</div>
+          <div>Overall, <span>adviced not to interact</span></div>
+        </div>
+      </div>
+    </main>
+    <script>
+      document.getElementById('feedback-form').addEventListener('submit', function(event) {
+      event.preventDefault(); // Prevent the default form submission
+
+      const email = document.getElementById('email').value.trim();
+      const proof = document.getElementById('proof').value.trim();
+
+      // Check if fields are empty
+      if (email === "" || proof === "") {
+          alert("Please fill in both the email and proof fields.");
+          return;
+      }
+
+      // Submit data via AJAX using Fetch API
+      fetch("{% url 'display_email' %}", {  // Ensure this URL is correctly processed by Django
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'X-CSRFToken': '{{ csrf_token }}'  // Include CSRF token for security
+          },
+          body: new URLSearchParams({
+              'email': email,
+              'proof': proof
+          })
+      })
+      .then(response => response.json())
+      .then(data => {
+          alert(data.message);  // Show a message based on server response
+
+          // Clear the form fields if submission is successful
+          if (data.status === 'success') {
+              document.getElementById('email').value = "";
+              document.getElementById('proof').value = "";
+          }
+      })
+      .catch(error => console.error('Error:', error));
+  });
+    </script>
+  </body>
+</html>

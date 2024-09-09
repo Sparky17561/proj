@@ -1,0 +1,206 @@
+/* General styles for the body */
+body {
+    margin: 0;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background-color: #fdf5e6; /* Pale yellow to cream color */
+    min-height: 100vh;
+}
+
+/* Header styling */
+header {
+    width: 100%;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+}
+
+nav a {
+    margin: 0 10px;
+    color: #333;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+nav .nav-button {
+    background-color: #ff6347; /* Tomato red */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+nav .nav-button:hover {
+    background-color: #ff4500; /* Darker tomato red */
+}
+
+/* Main hero section styling */
+.hero {
+    text-align: center;
+    padding: 50px 20px;
+    background-color: #fffaf0; /* Slightly different pale yellow */
+    width: 100%;
+}
+
+.hero h1 {
+    font-size: 36px;
+    color: #333;
+    margin: 0;
+}
+
+.hero p {
+    font-size: 18px;
+    color: #666;
+}
+
+/* Main content styling */
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+/* Container styling */
+.containerm {
+    background-color: white;
+    border: 1px solid #ddd;
+    padding: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    width: 500px;
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Upload box styling */
+.upload-box {
+    border: 2px dashed #bbb;
+    padding: 40px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    transition: border-color 0.3s ease;
+    width: 100%;
+}
+
+.upload-box p {
+    margin: 10px 0;
+    color: #666;
+    font-size: 16px;
+}
+
+.upload-box button {
+    background-color: #ff6347; /* Tomato red */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.upload-box button:hover {
+    background-color: #ff4500; /* Darker tomato red */
+}
+
+.upload-box.dragging {
+    border-color: #ff6347; /* Tomato red */
+}
+
+#file-input {
+    display: none;
+}
+
+/* File list styling */
+.file-list {
+    text-align: left;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.file-list li{
+    list-style: none;
+}
+
+.file-list p {
+    margin: 20px 0 10px 0;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#file-display {
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 5px;
+    min-height: 50px;
+    text-align: center;
+    background-color: #f9f9f9;
+}
+
+/* File display item styling */
+#file-display div {
+    padding: 5px;
+    border-bottom: 1px solid #ddd;
+}
+
+#file-display div:last-child {
+    border-bottom: none;
+}
+
+/* Actions styling */
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    width: 100%;
+}
+
+.actions button {
+    background-color: #ff6347; /* Tomato red */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.actions button:hover {
+    background-color: #ff4500; /* Darker tomato red */
+}
+
+#cancel-btn {
+    background-color: #ccc;
+}
+
+#cancel-btn:hover {
+    background-color: #999;
+}
+
+button, .button {
+    background-color: #ff6347; /* Tomato red */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover, .button:hover {
+    background-color: #ff4500; /* Darker tomato red */
+}
+
+/* Succes.html */
+
+.main{
+    background-color: #333;
+}
