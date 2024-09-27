@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Password - Kommute.io</title>
+    <link rel="stylesheet" href="{% static 'style/reset.css' %}">
+</head>
+<body>
+    <div class="container">
+        <div class="welcome-section">
+            <h1>Welcome to Kommute.io</h1>
+            <p>A professional kit that comes with ready-to-use MUI components developed with one common goal in mind: help you build faster & beautiful applications.</p>
+            <p>Join 6,000+ forward-thinking companies:</p>
+            <div class="company-logos">
+                <img src="samsung.png" alt="Samsung">
+                <img src="visma.png" alt="Visma">
+                <img src="bolt.png" alt="Bolt">
+                <img src="aws.png" alt="AWS">
+                <img src="accenture.png" alt="Accenture">
+                <img src="att.png" alt="AT&T">
+            </div>
+        </div>
+
+        <div class="login-section">
+            <div class="form-container">
+                <a href="{% url 'login_page'%}" class="back-link">← Login</a>
+                <h2>Reset password</h2>
+                <form action="/reset-password" method="post">
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="Password" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="password-confirm">Password (Confirm)</label>
+                        <input type="password" id="password-confirm" placeholder="Password (Confirm)" required>
+                    </div>
+                    <button type="submit" class="btn">Reset</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

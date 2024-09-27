@@ -1,0 +1,49 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Code - Kommute.io</title>
+    <link rel="stylesheet" href="{% static 'style/verify.css' %}">
+</head>
+<body>
+    <div class="container">
+        <div class="welcome-section">
+            <h1>Welcome to Kommute.io</h1>
+            <p>A professional kit that comes with ready-to-use MUI components developed with one common goal in mind: help you build faster & beautiful applications.</p>
+            <p>Join 6,000+ forward-thinking companies:</p>
+            <div class="company-logos">
+                <img src="samsung.png" alt="Samsung">
+                <img src="visma.png" alt="Visma">
+                <img src="bolt.png" alt="Bolt">
+                <img src="aws.png" alt="AWS">
+                <img src="accenture.png" alt="Accenture">
+                <img src="att.png" alt="AT&T">
+            </div>
+        </div>
+
+        <div class="login-section">
+            <div class="form-container">
+                <a href="{% url 'login_page'%}" class="back-link">← Login</a>
+                <h2>Verify code</h2>
+                <form action="/verify-code" method="post">
+                    <div class="input-group code-input-group">
+                        <label for="code">Code</label>
+                        <div class="code-box">
+                            <input type="text" maxlength="1" required>
+                            <input type="text" maxlength="1" required>
+                            <input type="text" maxlength="1" required>
+                            <input type="text" maxlength="1" required>
+                            <input type="text" maxlength="1" required>
+                            <input type="text" maxlength="1" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn">Verify</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,43 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forgot Password - Kommute.io</title>
+    <link rel="stylesheet" href="{% static 'style/forget.css' %}">
+</head>
+<body>
+    <div class="container">
+        <div class="welcome-section">
+            <h1>Welcome to Kommute.io</h1>
+            <p>A professional kit that comes with ready-to-use MUI components developed with one common goal in mind: help you build faster & beautiful applications.</p>
+            <p>Join 6,000+ forward-thinking companies:</p>
+            <div class="company-logos">
+                <img src="samsung.png" alt="Samsung">
+                <img src="visma.png" alt="Visma">
+                <img src="bolt.png" alt="Bolt">
+                <img src="aws.png" alt="AWS">
+                <img src="accenture.png" alt="Accenture">
+                <img src="att.png" alt="AT&T">
+            </div>
+        </div>
+
+        <div class="login-section">
+            <div class="form-container">
+                <a href="{% url 'login_page'%}" class="back-link">← Login</a>
+                <h2>Forgot password</h2>
+                <form action="/forgot-password" method="post">
+                    <div class="input-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" placeholder="Email Address" required>
+                        <div class="error" id="emailError">Email is required</div>
+                    </div>
+                    <button type="submit" class="btn">Send reset link</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

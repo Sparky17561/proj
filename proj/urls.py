@@ -16,4 +16,9 @@ urlpatterns = [
     path('starter-page/', views.starter_page, name='starter-page'),  # Starter page
     path('analyze_comments/', views.analyze_comments, name='analyze_comments'),
     path('comments/', views.yt_page, name='youtube_analysis'),
+    path('login/',views.login_page, name="login_page"),
+    path('register/',views.register_page, name="register_page"),
+    path('forget/',views.forget_page, name="forget_page"),
+    path('verify/',views.verify_page, name="verify_page"),
+    path("reset/",views.reset_page, name="reset_page")
 ]

@@ -625,8 +625,20 @@ def service_details(request):
 def starter_page(request):
     return render(request, 'starter-page.html')
 
+def login_page(request):
+    return render(request, 'login.html')
 
+def register_page(request):
+    return render(request, 'register.html')
 
+def forget_page(request):
+    return render(request, 'forget.html')
+
+def verify_page(request):
+    return render(request, 'verify.html')
+
+def reset_page(request):
+    return render(request, 'reset.html')
 
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
@@ -965,4 +977,6 @@ def analyze_comments(request):
         error_message = str(e)
         traceback.print_exc()
         return JsonResponse({"error": error_message}, status=500)
+
+
 

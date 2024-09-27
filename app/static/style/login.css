@@ -1,0 +1,134 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f8f9fa;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    width: 80%;
+    max-width: 1200px;
+    height: 80vh;
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.welcome-section {
+    background-color: #1f2739;
+    color: white;
+    padding: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.welcome-section h1 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+.welcome-section p {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+}
+
+.company-logos {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.company-logos img {
+    height: 30px;
+    opacity: 0.8;
+}
+
+.login-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 50px;
+    background-color: #f8f9fa;
+}
+
+.form-container {
+    width: 100%;
+    max-width: 400px;
+}
+
+.form-container h2 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.form-container p {
+    font-size: 1rem;
+    margin-bottom: 20px;
+}
+
+.form-container a {
+    color: #0056b3;
+    text-decoration: none;
+}
+
+.form-container .input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 1rem;
+    margin-bottom: 5px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 1rem;
+    background-color: #f8f9fa;
+}
+
+.input-group .error {
+    color: #dc3545;
+    font-size: 0.9rem;
+    margin-top: 5px;
+    display: none;
+}
+
+.btn {
+    width: 100%;
+    padding: 15px;
+    background-color: #6258e5;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #574acc;
+}
+
+.forgot-password {
+    display: block;
+    margin-top: 15px;
+    font-size: 0.9rem;
+    text-align: right;
+}
