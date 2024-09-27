@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Video Analysis</title>
+  <link rel="stylesheet" href="{% static 'style/yt.css' %}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script defer src="{% static 'js/yt.js' %}"></script>
+</head>
+<body>
+  <!-- Back Button -->
+  <button class="back-button">Back</button>
+
+  <!-- Search bar -->
+  <input type="text" id="video-url" placeholder="Enter the URL of the video">
+  <button id="analyze-button">Analyze</button>
+
+  <!-- Main container -->
+  <div class="container">
+    <!-- Left side charts -->
+    <div class="chart-container">
+      <div class="chart-box">
+        <canvas id="spamChart"></canvas>
+      </div>
+      <div class="chart-box">
+        <canvas id="sentimentChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Suspicious comments section -->
+    <div class="suspicious-comments">
+      <h3>Suspicious Comments</h3>
+      <ul id="suspicious-comments-list">
+        {% for comment in suspicious_comments %}
+          <li>{{ comment }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="report-container">
+        <h3>Report</h3>
+        <textarea placeholder="Enter reason..."></textarea>
+        <button id="submit-button">Submit</button> <!-- This ID should match -->
+      </div>
+      
+
+      <div class="url-analysis">
+        <h3>URL Analysis</h3>
+        <p id="url-analysis-result">
+          {% if spam_ratio %}
+            {{ spam_ratio.spam }}% Spam, {{ spam_ratio.not_spam }}% Not Spam
+          {% else %}
+            No analysis yet
+          {% endif %}
+        </p>
+        <button class="url-analyze-button">Analyze</button> <!-- Added class for clarity -->
+      </div>
+    </div>
+  </div>
+</body>
+</html>

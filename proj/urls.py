@@ -14,4 +14,6 @@ urlpatterns = [
     path('portfolio-details/', views.portfolio_details, name='portfolio-details'),  # Portfolio details page
     path('service-details/', views.service_details, name='service-details'),  # Service details page
     path('starter-page/', views.starter_page, name='starter-page'),  # Starter page
+    path('analyze_comments/', views.analyze_comments, name='analyze_comments'),
+    path('comments/', views.yt_page, name='youtube_analysis'),
 ]

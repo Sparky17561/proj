@@ -624,3 +624,256 @@ def service_details(request):
 
 def starter_page(request):
     return render(request, 'starter-page.html')
+
+
+
+
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+import pickle
+import re
+import joblib
+import numpy as np
+import nltk
+from nltk.corpus import stopwords
+from youtube_comment_downloader import YoutubeCommentDownloader
+from sklearn.feature_extraction.text import CountVectorizer
+
+# Load your models
+with open('app/predmodels/naive_bayes_classifier.pkl', 'rb') as model_file:
+    classifier = pickle.load(model_file)
+
+with open('app/predmodels/count_vectorizer.pkl', 'rb') as vectorizer_file:
+    vectorizer = pickle.load(vectorizer_file)  # Corrected
+
+
+svc_model = joblib.load('app/predmodels/best_svc_model.pkl')
+rf_model = joblib.load('app/predmodels/random_forest_model.pkl')
+ls_model = joblib.load('app/predmodels/linear_svc_model.pkl')
+
+nltk.download('stopwords')
+stop_words = set(stopwords.words('english'))
+
+def clean_text(text):
+    text = text.lower()
+    text = re.sub(r"http\S+|www\S+|https\S+", '', text, flags=re.MULTILINE)
+    text = re.sub(r'\@\w+|\#', '', text)
+    text = re.sub(r'[^\x00-\x7F]+', '', text)
+    text = re.sub(r'[^a-zA-Z0-9\s]', '', text)
+    text = re.sub(r'\s+', ' ', text)
+    text = text.strip()
+    words = text.split()
+    words = [word for word in words if word.isalpha() and word not in stop_words and len(word) > 2]
+    return ' '.join(words)
+
+def get_youtube_comments(video_url, limit=50, sort_by='top'):
+    if sort_by == 'top':
+        sort_by_value = 0
+    elif sort_by == 'newest':
+        sort_by_value = 1
+    else:
+        raise ValueError("Invalid sort_by value. Use 'top' or 'newest'.")
+
+    video_id_match = re.search(r"(?:v=|\/)([0-9A-Za-z_-]{11}).*", video_url)
+    if video_id_match:
+        video_id = video_id_match.group(1)
+    else:
+        return [], None
+
+    downloader = YoutubeCommentDownloader()
+    comments = []
+    try:
+        for comment in downloader.get_comments(video_id, sort_by=sort_by_value):
+            comments.append(comment['text'])
+            if len(comments) >= limit:
+                break
+    except Exception as e:
+        return [], str(e)
+
+    return comments, None
+
+def predict_sentiments(comments):
+    X_comments = vectorizer.transform(comments).toarray()
+    predictions = classifier.predict(X_comments)
+    return predictions
+
+def predict_spam(text):
+    formatted_text = [text]
+    svc_pred = svc_model.predict(formatted_text)
+    rf_pred = rf_model.predict(formatted_text)
+    ls_pred = ls_model.predict(formatted_text)
+
+    predictions = np.array([svc_pred[0], rf_pred[0], ls_pred[0]])
+    average_prediction = np.mean(predictions)
+
+    return average_prediction
+
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
+import json
+import pickle
+import re
+import joblib
+import numpy as np
+import nltk
+from nltk.corpus import stopwords
+from youtube_comment_downloader import YoutubeCommentDownloader
+import traceback  # Import traceback for debugging
+
+# Load your models
+with open('app/predmodels/naive_bayes_classifier.pkl', 'rb') as model_file:
+    classifier = pickle.load(model_file)
+
+with open('app/predmodels/count_vectorizer.pkl', 'rb') as vectorizer_file:
+    vectorizer = pickle.load(vectorizer_file)
+
+svc_model = joblib.load('app/predmodels/best_svc_model.pkl')
+rf_model = joblib.load('app/predmodels/random_forest_model.pkl')
+ls_model = joblib.load('app/predmodels/linear_svc_model.pkl')
+
+nltk.download('stopwords')
+stop_words = set(stopwords.words('english'))
+
+def clean_text(text):
+    text = text.lower()
+    text = re.sub(r"http\S+|www\S+|https\S+", '', text, flags=re.MULTILINE)
+    text = re.sub(r'\@\w+|\#', '', text)
+    text = re.sub(r'[^\x00-\x7F]+', '', text)
+    text = re.sub(r'[^a-zA-Z0-9\s]', '', text)
+    text = re.sub(r'\s+', ' ', text)
+    text = text.strip()
+    words = text.split()
+    words = [word for word in words if word.isalpha() and word not in stop_words and len(word) > 2]
+    return ' '.join(words)
+
+def get_youtube_comments(video_url, limit=50, sort_by='top'):
+    if sort_by == 'top':
+        sort_by_value = 0
+    elif sort_by == 'newest':
+        sort_by_value = 1
+    else:
+        raise ValueError("Invalid sort_by value. Use 'top' or 'newest'.")
+
+    # Updated regex to match various YouTube URL formats
+    video_id_match = re.search(r"(?:v=|\/|youtu\.be\/)([0-9A-Za-z_-]{11})", video_url)
+    if video_id_match:
+        video_id = video_id_match.group(1)
+    else:
+        return [], "Invalid YouTube URL or unable to extract video ID"
+
+    downloader = YoutubeCommentDownloader()
+    comments = []
+    try:
+        for comment in downloader.get_comments(video_id, sort_by=sort_by_value):
+            comments.append(comment['text'])
+            if len(comments) >= limit:
+                break
+    except Exception as e:
+        return [], str(e)
+
+    return comments, None
+
+def predict_sentiments(comments):
+    X_comments = vectorizer.transform(comments).toarray()
+    predictions = classifier.predict(X_comments)
+    return predictions
+
+def predict_spam(text):
+    formatted_text = [text]
+    svc_pred = svc_model.predict(formatted_text)
+    rf_pred = rf_model.predict(formatted_text)
+    ls_pred = ls_model.predict(formatted_text)
+
+    predictions = np.array([svc_pred[0], rf_pred[0], ls_pred[0]])
+    average_prediction = np.mean(predictions)
+
+    return average_prediction
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def analyze_comments(request):
+    try:
+        # Get YouTube video URL from request data
+        data = json.loads(request.body)  # Load JSON data from the request body
+        video_url = data.get('video_url')
+        if not video_url:
+            return JsonResponse({"error": "No video URL provided"}, status=400)
+
+        sort_by = data.get('sort_by', 'top')
+        limit = int(data.get('limit', 50))
+
+        # Fetch comments
+        comments, error = get_youtube_comments(video_url, limit=limit, sort_by=sort_by)
+        if error:
+            return JsonResponse({"error": error}, status=400)
+
+        if not comments:
+            return JsonResponse({"error": "No comments found"}, status=404)
+
+        # Predict sentiments and spam
+        predictions = predict_sentiments(comments)
+
+        spam_comments = []  # List to store spam comments
+        spam_count = 0  # Count of spam comments
+        not_spam_count = 0  # Count of not spam comments
+        sentiment_counts = {"Good": 0, "Neutral": 0, "Bad": 0}
+        found_urls = []  # List to store found URLs
+
+        # Updated regex pattern to find URLs in comments
+        url_pattern = r'https?://[^\s]+|www\.[^\s]+'
+
+        # Classify comments
+        for comment, prediction in zip(comments, predictions):
+            sentiment_label = "Good" if prediction == 2 else "Neutral" if prediction == 1 else "Bad"
+            spam_score = predict_spam(comment)
+            spam_label = 'Spam' if spam_score >= 0.5 else 'Not Spam'
+
+            # Count sentiment
+            sentiment_counts[sentiment_label] += 1
+            
+            # If the comment is classified as spam, add it to the list
+            if spam_label == 'Spam':
+                spam_comments.append({
+                    "comment": comment,
+                    "sentiment": sentiment_label,
+                    "spam": spam_label
+                })
+                spam_count += 1
+            else:
+                not_spam_count += 1
+
+            # Find URLs in the comment and add them to the list
+            urls_in_comment = re.findall(url_pattern, comment)
+            if urls_in_comment:
+                found_urls.extend(urls_in_comment)
+
+        # Calculate spam ratio
+        total_comments = len(comments)
+        spam_ratio = {
+            "spam": (spam_count / total_comments) * 100 if total_comments else 0,
+            "not_spam": (not_spam_count / total_comments) * 100 if total_comments else 0
+        }
+
+        # Calculate sentiment ratio
+        sentiment_ratio = {
+            "good": (sentiment_counts["Good"] / total_comments) * 100 if total_comments else 0,
+            "neutral": (sentiment_counts["Neutral"] / total_comments) * 100 if total_comments else 0,
+            "bad": (sentiment_counts["Bad"] / total_comments) * 100 if total_comments else 0
+        }
+
+        # Return the spam comments, spam ratio, sentiment ratio, and found URLs as JSON
+        return JsonResponse({
+            "spam_comments": spam_comments,
+            "spam_ratio": spam_ratio,
+            "sentiment_ratio": sentiment_ratio,
+            "found_urls": found_urls  # Include found URLs in the response
+        }, status=200)
+
+    except Exception as e:
+        error_message = str(e)
+        traceback.print_exc()  # Print the full traceback in the console for debugging
+        return JsonResponse({"error": error_message}, status=500)
+
+def yt_page(request):
+    return render(request, 'ytanalysis.html')
