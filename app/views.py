@@ -790,12 +790,102 @@ def predict_spam(text):
 
     return average_prediction
 
-@csrf_exempt
-@require_http_methods(["POST"])
+import json
+import re
+import traceback
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+from django.shortcuts import render
+
+# Assuming these functions are defined elsewhere in your code
+# from your_app.utils import get_youtube_comments, predict_sentiments, predict_spam, analyze_url_view
+
+
+
+
+
+
+
+
+
+def yt_page(request):
+    return render(request, 'ytanalysis.html')
+
+
+
+
+
+
+
+import json
+import re
+import pandas as pd
+import pickle
+import traceback
+from django.http import JsonResponse
+
+def load_models(model_files):
+    models = {}
+    for model_name, file_path in model_files.items():
+        try:
+            with open(file_path, 'rb') as f:
+                models[model_name] = pickle.load(f)
+        except Exception as e:
+            print(f"Error loading {model_name} from {file_path}: {str(e)}")
+    return models
+
+# Define your model file paths
+model_files = {
+    "model1": "app/predmodels/logisticregression.pkl",
+    "model2": "app/predmodels/randomforestclassifier.pkl",
+    "model3": "app/predmodels/kneighborsclassifier.pkl",
+    "model4": "app/predmodels/gradientboostingclassifier.pkl",
+    "model5": "app/predmodels/gaussiannb.pkl",
+    "model6": "app/predmodels/adaboostclassifier.pkl",
+    "model7": "app/predmodels/mlpclassifier.pkl"
+}
+
+# Load models
+models = load_models(model_files)
+
+def calculate_average_maliciousness(predictions):
+    """ Calculate the average percentage of maliciousness from model predictions. """
+    if not predictions:
+        return 0
+    # Assuming predictions are in binary format where 1 indicates malicious
+    average = sum(predictions.values()) / len(predictions)
+    return average * 100  # Convert to percentage
+
+def analyze_url(url):
+    """ Analyze a URL and return predictions and average maliciousness. """
+    try:
+        # Get features from the URL
+        features = get_features(url)
+        features_df = pd.DataFrame([features])
+
+        # Predictions from each model
+        predictions = {}
+        for model_name, model in models.items():
+            prediction = model.predict(features_df)[0]
+            predictions[model_name] = int(prediction)  # Store as integer
+
+        # Calculate average maliciousness
+        average_maliciousness = calculate_average_maliciousness(predictions)
+
+        # Return results
+        return {
+            'predictions': predictions,
+            'average_maliciousness': average_maliciousness
+        }
+    
+    except Exception as e:
+        return {'error': str(e)}
+
 def analyze_comments(request):
     try:
         # Get YouTube video URL from request data
-        data = json.loads(request.body)  # Load JSON data from the request body
+        data = json.loads(request.body)
         video_url = data.get('video_url')
         if not video_url:
             return JsonResponse({"error": "No video URL provided"}, status=400)
@@ -814,14 +904,10 @@ def analyze_comments(request):
         # Predict sentiments and spam
         predictions = predict_sentiments(comments)
 
-        spam_comments = []  # List to store spam comments
-        spam_count = 0  # Count of spam comments
-        not_spam_count = 0  # Count of not spam comments
-        sentiment_counts = {"Good": 0, "Neutral": 0, "Bad": 0}
-        found_urls = []  # List to store found URLs
-
-        # Updated regex pattern to find URLs in comments
-        url_pattern = r'https?://[^\s]+|www\.[^\s]+'
+        spam_comments = []
+        found_urls = []
+        malicious_urls = []
+        url_pattern = r'https?://[^\s]+|www\.[^\s]+'  # Regex pattern to find URLs
 
         # Classify comments
         for comment, prediction in zip(comments, predictions):
@@ -829,9 +915,6 @@ def analyze_comments(request):
             spam_score = predict_spam(comment)
             spam_label = 'Spam' if spam_score >= 0.5 else 'Not Spam'
 
-            # Count sentiment
-            sentiment_counts[sentiment_label] += 1
-            
             # If the comment is classified as spam, add it to the list
             if spam_label == 'Spam':
                 spam_comments.append({
@@ -839,41 +922,47 @@ def analyze_comments(request):
                     "sentiment": sentiment_label,
                     "spam": spam_label
                 })
-                spam_count += 1
-            else:
-                not_spam_count += 1
 
-            # Find URLs in the comment and add them to the list
+            # Find URLs in the comment and analyze each
             urls_in_comment = re.findall(url_pattern, comment)
-            if urls_in_comment:
-                found_urls.extend(urls_in_comment)
+            for url in urls_in_comment:
+                found_urls.append(url)
 
-        # Calculate spam ratio
+                # Analyze the URL using the analyze_url function
+                url_response = analyze_url(url)
+                
+                if isinstance(url_response, dict) and 'average_maliciousness' in url_response:
+                    percentage_maliciousness = url_response.get('average_maliciousness', 0)
+                    
+                    # Check if maliciousness is above the threshold
+                    if percentage_maliciousness > 50:  
+                        malicious_urls.append(url)
+
+        # Calculate spam and sentiment ratios
         total_comments = len(comments)
         spam_ratio = {
-            "spam": (spam_count / total_comments) * 100 if total_comments else 0,
-            "not_spam": (not_spam_count / total_comments) * 100 if total_comments else 0
+            "spam": len(spam_comments),
+            "not_spam": total_comments - len(spam_comments)
         }
-
-        # Calculate sentiment ratio
         sentiment_ratio = {
-            "good": (sentiment_counts["Good"] / total_comments) * 100 if total_comments else 0,
-            "neutral": (sentiment_counts["Neutral"] / total_comments) * 100 if total_comments else 0,
-            "bad": (sentiment_counts["Bad"] / total_comments) * 100 if total_comments else 0
+            "good": sum(1 for p in predictions if p == 2),
+            "neutral": sum(1 for p in predictions if p == 1),
+            "bad": sum(1 for p in predictions if p == 0)
         }
 
-        # Return the spam comments, spam ratio, sentiment ratio, and found URLs as JSON
+        # Return the spam comments, malicious URLs, and ratios as JSON
         return JsonResponse({
             "spam_comments": spam_comments,
+            "malicious_urls": malicious_urls,
+            "found_urls": found_urls,
             "spam_ratio": spam_ratio,
-            "sentiment_ratio": sentiment_ratio,
-            "found_urls": found_urls  # Include found URLs in the response
+            "sentiment_ratio": sentiment_ratio
         }, status=200)
 
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
     except Exception as e:
         error_message = str(e)
-        traceback.print_exc()  # Print the full traceback in the console for debugging
+        traceback.print_exc()
         return JsonResponse({"error": error_message}, status=500)
 
-def yt_page(request):
-    return render(request, 'ytanalysis.html')

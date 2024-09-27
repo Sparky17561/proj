@@ -15,10 +15,25 @@ body {
 
 /* search bar */
 .search-container {
+    display: flex;
   position: relative;
   width: 90vw; /* Adjust width */
   max-width: 1200px;
   margin: 0 auto; /* Centered */
+}
+
+#analyze-button{
+    background-color: #28a745;
+  width: 100px;
+  border: none;
+  color: white;
+  padding: 10px;
+  font-size: 16px;
+  cursor: pointer;
+
+  border-radius: 5px;
+  
+  margin-left: 20px;
 }
 
 .search-container input[type="text"] {
@@ -61,13 +76,16 @@ input[type="text"]::placeholder {
   width: 70px;
   border: none;
   color: white;
-  padding: 8px 16px;
+  padding: 10px;
   font-size: 16px;
-  cursor: pointer;
+  cursor: pointer; /* You might want to change this to 'auto' for anchor */
   margin-top: 20px;
   border-radius: 5px;
   align-self: flex-start; /* Stick to the left */
   margin-left: 50px;
+  text-decoration: none; /* Remove underline from link */
+  display: inline-block; /* Ensures padding and background are applied correctly */
+  text-align: center;
 }
 
 .container {
@@ -81,13 +99,13 @@ input[type="text"]::placeholder {
 
 .chart-container,
 .suspicious-comments,
-.report-container,
-.url-analysis {
+.report-container {
   background-color: white;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   padding: 20px;
   border-radius: 8px;
   overflow: hidden; /* Hide overflow */
+  margin-bottom: 10px;
 }
 
 .chart-container {
@@ -95,10 +113,15 @@ input[type="text"]::placeholder {
   flex-direction: column;
   gap: 20px;
   justify-content: center;
+  
 }
 
+.chart-container h3{
+    margin-top: -80px;
+}
 .chart-box {
   position: relative;
+  margin-left: 35px;
   width: 100%;
   height: 200px; /* Reduced height to fit in the viewport */
 }
@@ -132,43 +155,46 @@ input[type="text"]::placeholder {
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.report-container h3 {
-  margin-top: 0;
-}
-
-.report-container textarea {
-  resize: none;
-  width: 95%;
-  height: 80px;
-  border: 1px solid #ccc;
-  padding: 10px;
-  border-radius: 5px;
-  margin-bottom: 10px;
-  font-size: 14px;
-}
-
-.report-container button {
-  width: 100px;
-  padding: 10px;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-left: 250px;
-}
-
-.url-analysis {
-  margin-top: 20px; /* Added margin between Report and URL Analysis */
-}
-
-.url-analysis button {
-  width: 100px;
-  padding: 10px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-left: 250px;
-}
+.report-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .report-container h3 {
+    margin-top: 0;
+  }
+  
+  .report-container ul {
+    list-style-type: none;
+    padding-left: 0;
+    overflow-y: auto;
+    max-height: 400px; /* Adjusted height to fit */
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+  }
+  
+  .report-container ul li {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* New styles for the links */
+  .report-container ul li a {
+    display: block; /* Ensures the link takes the full width */
+    text-decoration: none; /* Removes underline */
+    color: darkgreen; /* Sets text color */
+    overflow-wrap: break-word; /* Ensures long text wraps */
+    white-space: normal; /* Allows wrapping */
+  }
+  
+  /* Optional: Hover effect for links */
+  .report-container ul li a:hover {
+    text-decoration: underline; /* Optional: adds underline on hover */
+  }
+  

@@ -16,5 +16,4 @@ urlpatterns = [
     path('starter-page/', views.starter_page, name='starter-page'),  # Starter page
     path('analyze_comments/', views.analyze_comments, name='analyze_comments'),
     path('comments/', views.yt_page, name='youtube_analysis'),
-    path('url/', views.analyze_url_view, name='url_analysis'),
 ]

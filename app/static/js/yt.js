@@ -8,18 +8,10 @@ document.addEventListener("DOMContentLoaded", function () {
         analyzeButton.addEventListener("click", analyzeComments);
     }
 
-    // Handle Submit Button Click
-    const submitButton = document.getElementById("submit-button");
-    if (submitButton) {
-        submitButton.addEventListener("click", function() {
-            alert("Submit button clicked!"); // Simulate submission logic here
-        });
-    }
-
     // Analyze Comments Function
     function analyzeComments() {
         const videoUrl = document.getElementById('video-url');
-        
+
         if (!videoUrl || !videoUrl.value) {
             alert('Please enter a video URL.');
             return;
@@ -78,117 +70,115 @@ document.addEventListener("DOMContentLoaded", function () {
     function updateUI(data) {
         // Get references to the elements
         const suspiciousCommentsList = document.getElementById('suspicious-comments-list');
+        const maliciousUrlsList = document.getElementById('malicious-urls-list'); // Updated ID
         const urlAnalysisResult = document.getElementById('url-analysis-result');
-        const foundUrlsList = document.getElementById('found-urls-list'); // Get the found URLs list element
 
-        // Check if elements exist before trying to update them
+        // Clear previous results
+        if (urlAnalysisResult) {
+            urlAnalysisResult.innerHTML = ''; // Clear previous analysis result
+        }
+
+        // Update suspicious comments (spam comments only)
         if (suspiciousCommentsList) {
             suspiciousCommentsList.innerHTML = ''; // Clear previous comments
-
-            // Update suspicious comments (spam comments only)
             data.spam_comments.forEach(comment => {
                 const li = document.createElement('li');
                 li.textContent = comment.comment; // Access comment text
                 suspiciousCommentsList.appendChild(li);
             });
-        } else {
-            console.error("Element with ID 'suspicious-comments-list' not found.");
         }
 
-        if (urlAnalysisResult) {
-            urlAnalysisResult.textContent = `${data.spam_ratio.spam} Spam, ${data.spam_ratio.not_spam} Not Spam`;
-        } else {
-            console.error("Element with ID 'url-analysis-result' not found.");
-        }
-
-        // Clear the URLs list before adding new entries
-        if (foundUrlsList) {
-            foundUrlsList.innerHTML = ''; // Clear previous URLs
-
-            // Update the found URLs section
-            data.found_urls.forEach(url => {
-                const li = document.createElement('li');
-                li.innerHTML = `<a href="${url}" target="_blank">${url}</a>`; // Make URLs clickable
-                foundUrlsList.appendChild(li);
-            });
-        } else {
-            console.error("Element with ID 'found-urls-list' not found.");
+        // Update the found URLs section
+        if (maliciousUrlsList) {
+            maliciousUrlsList.innerHTML = ''; // Clear previous URLs
+            if (data.malicious_urls && data.malicious_urls.length > 0) {
+                data.malicious_urls.forEach(url => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<a href="${url}" target="_blank">${url}</a>`; // Make URLs clickable
+                    maliciousUrlsList.appendChild(li);
+                });
+            } else {
+                maliciousUrlsList.innerHTML = '<li>No malicious URLs found.</li>'; // Handle case with no malicious URLs
+            }
         }
 
         // Update charts based on data
         if (data.spam_ratio) {
-            updateSpamChart(data.spam_ratio); // Pass the correct data
+            updateSpamChart(data.spam_ratio);
         }
         if (data.sentiment_ratio) {
-            updateSentimentChart(data.sentiment_ratio); // Pass the correct data
+            updateSentimentChart(data.sentiment_ratio);
+        }
+
+        // Optional: Display a message about the analysis
+        if (urlAnalysisResult) {
+            urlAnalysisResult.innerHTML = `<p>Analysis completed successfully.</p>`;
         }
     }
 
     // Function to update the Spam Chart
     function updateSpamChart(data) {
         const spamCtx = document.getElementById('spamChart');
-        
-        if (!spamCtx) {
-            console.error("Element with ID 'spamChart' not found.");
-            return;
-        }
 
-        if (spamChartInstance) {
-            spamChartInstance.destroy();
-        }
+        if (spamCtx) {
+            if (spamChartInstance) {
+                spamChartInstance.destroy();
+            }
 
-        spamChartInstance = new Chart(spamCtx.getContext('2d'), {
-            type: 'pie',
-            data: {
-                labels: ['Spam', 'Not Spam'],
-                datasets: [{
-                    data: [data.spam, data.not_spam],
-                    backgroundColor: ['#FF6384', '#36A2EB'],
-                    hoverOffset: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top'
+            spamChartInstance = new Chart(spamCtx.getContext('2d'), {
+                type: 'pie',
+                data: {
+                    labels: ['Spam', 'Not Spam'],
+                    datasets: [{
+                        data: [data.spam, data.not_spam],
+                        backgroundColor: ['#FF6384', '#36A2EB'],
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
                     }
                 }
-            }
-        });
+            });
+        } else {
+            console.error("Element with ID 'spamChart' not found.");
+        }
     }
 
     // Function to update the Sentiment Chart
     function updateSentimentChart(data) {
         const sentimentCtx = document.getElementById('sentimentChart');
-        
-        if (!sentimentCtx) {
-            console.error("Element with ID 'sentimentChart' not found.");
-            return;
-        }
 
-        if (sentimentChartInstance) {
-            sentimentChartInstance.destroy();
-        }
+        if (sentimentCtx) {
+            if (sentimentChartInstance) {
+                sentimentChartInstance.destroy();
+            }
 
-        sentimentChartInstance = new Chart(sentimentCtx.getContext('2d'), {
-            type: 'pie',
-            data: {
-                labels: ['Bad', 'Good', 'Neutral'],
-                datasets: [{
-                    data: [data.bad, data.good, data.neutral],
-                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
-                    hoverOffset: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top'
+            sentimentChartInstance = new Chart(sentimentCtx.getContext('2d'), {
+                type: 'pie',
+                data: {
+                    labels: ['Bad', 'Good', 'Neutral'],
+                    datasets: [{
+                        data: [data.bad, data.good, data.neutral],
+                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
                     }
                 }
-            }
-        });
+            });
+        } else {
+            console.error("Element with ID 'sentimentChart' not found.");
+        }
     }
 });
