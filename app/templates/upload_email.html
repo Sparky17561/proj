@@ -11,17 +11,6 @@
 </head>
 
 <body>
-    <header>
-        <nav>
-            <a href="#">Home</a>
-            <a href="#">How it works</a>
-            <a href="#">Stories</a>
-            <a href="#">Features</a>
-            <a href="#">Pricing</a>
-            <a href="#">Contact</a>
-            <button class="nav-button">Request Demo</button>
-        </nav>
-    </header>
     <main>
         <section class="hero">
             <h1>Phish-mail Detection</h1>
@@ -41,9 +30,7 @@
                     </div>
                 </div>
                 <button type="submit" id="submit-button" class="button upload">Submit</button>
-                <button type="button" class="button cancel" id="cancel-button">
-                    Cancel
-                </button>
+                <a href="{% url 'index' %}" class="button cancel" id="cancel-button">Back</a>
             </form>
         </div>
     </main>
